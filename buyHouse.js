@@ -1,3 +1,5 @@
+console.log("Test: How to Buy a House");
+
 const principalElement = document.querySelector("#principal");
 const yearsElement = document.querySelector("#years");
 const interestElement = document.querySelector("#interest");
