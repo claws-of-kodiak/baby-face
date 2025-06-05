@@ -1,4 +1,87 @@
-console.log("Test: How to Buy a House");
+//// Dropdown menu interaction
+const housesDisplay = document.querySelector(".display-houses")
+    // this element fomats saved houses 
+const addCancelBtn = document.querySelector("#add-house")
+    // this changes state to cancel button
+    // this reveals criteria dropdowns
+    // this creates save button 
+const dropdowns = document.querySelectorAll(".dropdown")
+    // This includes Type of Home
+    // etc...
+const selectBtns = document.querySelectorAll(".select")
+const activeCriteria = document.querySelectorAll(".active")
+    // this allows clicked elements to be stored in variable
+const criteriaLists = document.querySelectorAll(".menu")
+const liElements = document.querySelectorAll("li")
+const saveBtn = document.querySelector("#save-btn")
+    // this targets the save button at the bottom of the div
+const typeOfHomeBtn = document.querySelector("#type-of-home")
+const bedsBtn = document.querySelector("#beds")
+const bathsBtn = document.querySelector("#baths")
+const floorsBtn = document.querySelector("#floors")
+const windowDirectionBtn = document.querySelector("#window-direction")
+let activeHouse = false;
+let activeDropdown = false;
+
+function toggleActiveHouse() {
+    activeHouse = !activeHouse
+    if (!activeHouse) {
+        addCancelBtn.textContent = "Add Property"
+        saveBtn.classList.remove("visable");
+        dropdowns.forEach(dropdown => {
+            dropdown.classList.remove("visable");
+        });
+    }
+    if (activeHouse) {
+        addCancelBtn.textContent = "Cancel"
+        saveBtn.classList.add("visable");
+        dropdowns.forEach(dropdown => {
+            dropdown.classList.add("visable");
+        });
+        saveBtn.onclick = saveHouse;    
+    }
+}
+
+function toggleDropdownMenu() {
+    activeDropdown = !activeDropdown
+    if (!activeDropdown) {
+        this.nextElementSibling.classList.remove("visable");
+    }
+    if (activeDropdown) {
+        this.nextElementSibling.classList.add("visable");
+    }
+}
+
+function updateCriteria() {
+    this.parentElement.previousElementSibling.textContent = this.textContent;
+    toggleDropdownMenu.call(this.parentElement.previousElementSibling);
+}
+
+function saveHouse() {
+    const typeOfHome = typeOfHomeBtn.textContent
+    const beds = bedsBtn.textContent
+    const baths = bathsBtn.textContent
+    const floors = floorsBtn.textContent
+    const windowDirection = windowDirectionBtn.textContent
+
+    if (typeOfHome === '--select one' || beds === '--select one' || baths === '--select one' || floors === '--select one' || windowDirection === '--select one') {
+        alert("You must complete all criteria.")
+        return;
+    }
+    
+    toggleActiveHouse();
+
+    housesDisplay.textContent = `${typeOfHome} with ${beds} bed, ${baths} bath, and ${floors} floor. Master windows on the ${windowDirection} wall.`
+}
+
+addCancelBtn.onclick = toggleActiveHouse;
+    // addCancelBtn.addEventListener('click', toggleActiveHouse);
+selectBtns.forEach(btn => {
+    btn.onclick = toggleDropdownMenu;
+});
+liElements.forEach(criteria => {
+    criteria.onclick = updateCriteria;
+})
 
 const principalElement = document.querySelector("#principal");
 const yearsElement = document.querySelector("#years");
@@ -43,7 +126,7 @@ function calculate() {
 
 calcBtn.addEventListener('click', calculate);
 
-//Contact saved animation --- needs array integration
+////Contact saved animation --- needs array integration
 // confirmation = 'Your contact was saved.'
 
 // const fullName = document.querySelector('#name');
@@ -61,9 +144,6 @@ calcBtn.addEventListener('click', calculate);
 // document.querySelector('.addbtn').addEventListener('click', contactSaved);
 
 //Save email into array
-
-//Closures and Scopes
-
 
 //// Independent variables using same function
 // function createBetterCouter() {
@@ -83,43 +163,3 @@ calcBtn.addEventListener('click', calculate);
 
 // count8();
 // count8();
-
-//// Private variables to protect data manipulation
-    // function createBankAccount() {
-    //     let balance = 0;
-
-    //     return {
-    //         //Set up function for deposits
-    //         deposit(amount) {
-    //         if (amount > 0) {
-    //             balance += amount; 
-    //             console.log(`You deposited: $${amount}`);
-    //         } else {
-    //             console.log(`Deposit amount must be positive.`);
-    //         }
-    //     },
-
-    //         //Set up function for withdraws
-    //         withdraw(amount) {
-    //             if (amount > balance) {
-    //                 console.log(`Insufficient funds. You need $${amount - balance} more`);
-    //             } else if (amount <= 0) {
-    //                 console.log("Withdrawal amount must be positive");
-    //             } else {
-    //                 balance -= amount;
-    //                 console.log(`You withdrew: $${amount}`);
-    //             }
-    //         },
-
-    //         //Create private scope for balance variable
-    //         getBalance() {
-    //             return balance;
-    //         }
-    //     };
-    // }
-
-    // const myAccount = createBankAccount();
-
-    // myAccount.deposit(100);
-    // myAccount.withdraw(40);
-    // console.log(`Your new balance: $${myAccount.getBalance()}`);

@@ -4,11 +4,17 @@ header {
 }
 
 h1 {
-    font-size: 50px;
+    font-size: 60px;
+    font-weight: bolder;
     color: white;
     text-align: center;
 }
 
+h3 {
+    font-size: 20px;
+    background-color: rgb(250, 255, 113);
+    max-width: fit-content;
+}
 
 body {
     background-color: #ffb300;
@@ -22,4 +28,43 @@ img {
 
 footer {
     background-color: #210f37;
+}
+
+.dropdown {
+    display: none;
+}
+
+.menu {
+    display: none;
+}
+
+.visable {
+    display: block;
+}
+
+.select {
+    background-color: rgb(227, 227, 227);
+    font-weight: bolder;
+    border: none;
+}
+
+.primary-btns {
+    background-color: rgb(25, 25, 219);
+    color: white;
+    border: none;
+    outline: solid 2px white;
+
+    &:hover {
+        cursor: pointer;
+    }
+}
+
+li {
+    list-style-type: none;
+    
+    &:hover {
+        cursor: pointer;
+        background-color: rgb(250, 255, 113);
+        max-width: fit-content;
+    }
 }
