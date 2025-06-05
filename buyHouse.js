@@ -15,6 +15,7 @@ const criteriaLists = document.querySelectorAll(".menu")
 const liElements = document.querySelectorAll("li")
 const saveBtn = document.querySelector("#save-btn")
     // this targets the save button at the bottom of the div
+const newDeleteBtn = document.querySelector(".deleteBtn");
 const typeOfHomeBtn = document.querySelector("#type-of-home")
 const bedsBtn = document.querySelector("#beds")
 const bathsBtn = document.querySelector("#baths")
@@ -27,16 +28,19 @@ function toggleActiveHouse() {
     activeHouse = !activeHouse
     if (!activeHouse) {
         addCancelBtn.textContent = "Add Property"
-        saveBtn.classList.remove("visable");
+        saveBtn.classList.remove("visable-criteria");
         dropdowns.forEach(dropdown => {
-            dropdown.classList.remove("visable");
+            dropdown.classList.remove("visable-criteria");
         });
     }
     if (activeHouse) {
         addCancelBtn.textContent = "Cancel"
-        saveBtn.classList.add("visable");
+        saveBtn.classList.add("visable-criteria");
+        selectBtns.forEach(btn => {
+            btn.textContent = '--select one';
+        })
         dropdowns.forEach(dropdown => {
-            dropdown.classList.add("visable");
+            dropdown.classList.add("visable-criteria");
         });
         saveBtn.onclick = saveHouse;    
     }
@@ -45,10 +49,10 @@ function toggleActiveHouse() {
 function toggleDropdownMenu() {
     activeDropdown = !activeDropdown
     if (!activeDropdown) {
-        this.nextElementSibling.classList.remove("visable");
+        this.nextElementSibling.classList.remove("visable-dropdown");
     }
     if (activeDropdown) {
-        this.nextElementSibling.classList.add("visable");
+        this.nextElementSibling.classList.add("visable-dropdown");
     }
 }
 
@@ -71,13 +75,23 @@ function saveHouse() {
     
     toggleActiveHouse();
 
-    housesDisplay.textContent = `${typeOfHome} with ${beds} bed, ${baths} bath, and ${floors} floor. Master windows on the ${windowDirection} wall.`
+    housesDisplay.innerHTML += `<p>${typeOfHome} with ${beds} bed, ${baths} bath, and ${floors} floor. Master windows on the ${windowDirection} wall.<button>x</button></p>`;
+    housesDisplay.style.backgroundColor = "white";
+    housesDisplay.style.padding = "5px 5px";
+    housesDisplay.style.marginBottom = "30px";
+    housesDisplay.style.fontWeight = "bold";
+}
+
+function hideSelectBtn() {
+    this.classList.add("hidden");
 }
 
 addCancelBtn.onclick = toggleActiveHouse;
     // addCancelBtn.addEventListener('click', toggleActiveHouse);
 selectBtns.forEach(btn => {
-    btn.onclick = toggleDropdownMenu;
+    btn.addEventListener('click', 
+        toggleDropdownMenu,
+        hideSelectBtn)
 });
 liElements.forEach(criteria => {
     criteria.onclick = updateCriteria;
