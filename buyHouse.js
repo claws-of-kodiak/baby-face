@@ -1,3 +1,42 @@
+//// Dark and Light Mode
+const darklLightToggle = document.querySelector("#d-l-toggle");
+const body = document.querySelector("body");
+const headers2 = document.querySelectorAll('h2');
+
+function restoreMode() {
+    const savedState = localStorage.getItem("switchState");
+    if (savedState === "on") {
+      darklLightToggle.checked = true;
+      body.style.backgroundColor = "#855d00"
+      headers2.forEach(h2 => {
+        h2.style.color = "white"
+      });
+      console.log("Restored: Dark Mode");
+    } else {
+      darklLightToggle.checked = false;
+      console.log("Restored: Light Mode");
+    }
+};
+
+function saveMode() {
+    if (this.checked) {
+        localStorage.setItem("switchState", "on");
+        body.style.backgroundColor = "#855d00"
+        headers2.forEach(h2 => {
+            h2.style.color = "white"
+          });
+      } else {
+        localStorage.setItem("switchState", "off");
+        body.style.backgroundColor = "#ffb300"
+        headers2.forEach(h2 => {
+            h2.style.color = "black"
+          });
+      }
+};
+
+window.addEventListener("DOMContentLoaded", restoreMode);
+darklLightToggle.addEventListener("change", saveMode);
+
 //// Dropdown menu interaction
 const housesDisplay = document.querySelector(".display-houses")
     // this element fomats saved houses 
@@ -15,7 +54,6 @@ const criteriaLists = document.querySelectorAll(".menu")
 const liElements = document.querySelectorAll("li")
 const saveBtn = document.querySelector("#save-btn")
     // this targets the save button at the bottom of the div
-const newDeleteBtn = document.querySelector(".deleteBtn");
 const typeOfHomeBtn = document.querySelector("#type-of-home")
 const bedsBtn = document.querySelector("#beds")
 const bathsBtn = document.querySelector("#baths")
@@ -75,15 +113,32 @@ function saveHouse() {
     
     toggleActiveHouse();
 
-    housesDisplay.innerHTML += `<p>${typeOfHome} with ${beds} bed, ${baths} bath, and ${floors} floor. Master windows on the ${windowDirection} wall.<button>x</button></p>`;
+    const houseInfo = document.createElement("p");
+    houseInfo.textContent = `${typeOfHome} with ${beds} bed, ${baths} bath, and ${floors} floor. Master windows on the ${windowDirection} wall.`;
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "x";
+    deleteBtn.classList.add("delete");
+
     housesDisplay.style.backgroundColor = "white";
     housesDisplay.style.padding = "5px 5px";
     housesDisplay.style.marginBottom = "30px";
     housesDisplay.style.fontWeight = "bold";
+
+    deleteBtn.addEventListener("click", () => {
+        houseInfo.remove();
+    });
+ 
+    houseInfo.appendChild(deleteBtn);
+    housesDisplay.appendChild(houseInfo);
 }
 
 function hideSelectBtn() {
     this.classList.add("hidden");
+}
+
+function deleteFunction() {
+    this.closest("p").remove();
 }
 
 addCancelBtn.onclick = toggleActiveHouse;
