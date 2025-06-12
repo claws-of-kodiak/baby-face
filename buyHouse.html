@@ -7,72 +7,27 @@
     <link rel="stylesheet" href="buyHouse.css">
 </head>
 <header>
-<h1>Budgeting and Finance</h1>
+<h1 id="page-title">Buy <span id="orange">Bitcoin</span> or<span id="blue"> Real Estate</span></h1>
 <div id="preferences">
-    <p>Dark/Light Mode</p>
-    <label class="switch">
+    <p class="preferences">Dark Mode  <label class="switch">
         <input type="checkbox" id="d-l-toggle">
         <span class="slider"></span>
-    </label>
+    </label></p>
 </div>
 </header>
 
 <body>
-    <h2>Property Crtieria</h2>
-        <div class="display-houses"></div>
-        <button class="primary-btns" id="add-house">Add Property</button>
-        <div class="dropdown">
-            <h3 class="category">Type of Home</h2>
-            <button id="type-of-home" class="select">--select one</button>
-            <ul class="menu">
-                <li>Single Family</li>
-                <li>Apartment</li>
-                <li>Townhouse</li>
-                <li>Duplex</li>
-            </ul>
-            <h3 class="category">Beds</h2>
-            <button id="beds" class="select">--select one</button>
-            <ul class="menu">
-                <li>1</li>
-                <li>2</li>
-                <li>3</li>
-                <li>4</li>
-                <li>5</li>
-            </ul>
-            <h3 class="category">Baths</h2>
-            <button id="baths" class="select">--select one</button>
-            <ul class="menu">
-                <li>1</li>
-                <li>2</li>
-                <li>3</li>
-                <li>4</li>
-            </ul>
-            <h3 class="category">Floors</h2>
-            <button id="floors" class="select">--select one</button>
-            <ul class="menu">
-                <li>1</li>
-                <li>2</li>
-                <li>3</li>
-            </ul>
-            <h3 class="category">Master Bed Window Direction</h2>
-            <button id="window-direction" class="select">--select one</button>
-            <ul class="menu">
-                <li>north</li>
-                <li>south</li>
-                <li>east</li>
-                <li>west</li>
-            </ul>
-            <!-- Insert more dropdowns here -->
-            <button class="primary-btns" id="save-btn">Save</button>
-        </div>
+    <nav>
+        <ul id="mainNav">
+            <li><a href="/concept" data-link></a>Concepts</li>
+            <li><a href="/tools" data-link></a>Tools</li>
+            <li><a href="/notes" data-link></a>Notes</li>
+        </ul>
+    </nav>
 
-    <h2>Loan Calculator</h2>
-    <input id="principal" type="number" min="0" placeholder="Enter loan amount">
-    <input id="years" type="number" min="0" placeholder="Enter length of loan (yrs)">
-    <input id="interest" type="number" min="0" placeholder="Enter APY">
-    <button id="calculate">Calculate</button>
-    <p id="output"></p>
-
+<main id="app">
+    <!-- Dynamic content will display here -->
+</main>
 
     <script src="./buyHouse.js"></script>
 </body>

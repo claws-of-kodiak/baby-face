@@ -1,10 +1,51 @@
-
 h1 {
     font-size: 60px;
     font-weight: bolder;
     color: white;
     text-align: center;
     background-color: black;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+#mainNav {
+    position: fixed;
+    top: 120px;              /* Push it down slightly from the top */
+    left: 50%;               /* Center horizontally */
+    transform: translateX(-50%); /* Pull it back by half its width to truly center it */
+    width: 20%;              /* Or whatever fits your design */
+    font-size: 30px;
+    display: flex;
+    justify-content: space-between;
+    pointer-events: auto;    /* Ensure the nav itself remains interactive */
+    z-index: 10;             /* Optional: keep above page, but only if needed */
+  }
+
+#app {
+    margin-top: 100px;
+}
+
+#preferences {
+    position: fixed;
+    top:  5px;
+    left: 5px;
+    max-height: fit-content;
+}
+
+.preferences {
+    font-weight: bolder;
+    border: solid black;
+    max-width: fit-content;
+    padding: 10px 10px;
+    background-color: white;
+}
+
+#orange {
+    color: orange;
+}
+
+#blue {
+    color: #2196F3;
 }
 
 h3 {
@@ -61,7 +102,7 @@ h3 {
   
 
 body {
-    background-color: #ffb300;
+    background-color: #8ae1e0;
 }
 
 
@@ -128,6 +169,7 @@ footer {
 li {
     list-style-type: none;
     justify-content: center;
+    max-height: fit-content;
     
     &:hover {
         cursor: pointer;

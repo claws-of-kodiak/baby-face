@@ -1,3 +1,107 @@
+
+
+
+
+///////////////
+//////SPA//////
+///////////////
+
+const navs = document.querySelectorAll("li");
+const contentDisplay = document.querySelector("#app");
+
+function updatePageTitle() {
+    const pageTitle = document.getElementById("page-title");
+    let path = this.textContent;
+
+    pageTitle.textContent = path
+    contentDisplay.innerHTML = "";
+    console.log("Content cleared")
+    if (this.textContent === 'Tools') {
+        addToolsContent();
+        const property = new AddPropertyUI(contentDisplay);
+        property.init();
+        const loan = new LoanCalcUI(contentDisplay);
+        loan.init();
+    } if (this.textContent === 'Concepts') {
+        addConceptsContent();
+    } if (this.textContent === "Notes") {
+        addNotesContent();
+    }
+}
+function addToolsContent() {
+    console.log(`${addToolsContent.name}() triggered`)
+    contentDisplay.innerHTML = `<h2>Property Crtieria</h2>
+        <div class="display-houses"></div>
+        <button class="primary-btns" id="add-house">Add Property</button>
+        <div class="dropdown">
+            <h3 class="category">Type of Home</h3>
+            <button id="type-of-home" class="select">--select one</button>
+            <ul class="menu">
+                <li>Single Family</li>
+                <li>Apartment</li>
+                <li>Townhouse</li>
+                <li>Duplex</li>
+            </ul>
+            <h3 class="category">Beds</h2>
+            <button id="beds" class="select">--select one</button>
+            <ul class="menu">
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+                <li>5</li>
+            </ul>
+            <h3 class="category">Baths</h2>
+            <button id="baths" class="select">--select one</button>
+            <ul class="menu">
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+                <li>4</li>
+            </ul>
+            <h3 class="category">Floors</h2>
+            <button id="floors" class="select">--select one</button>
+            <ul class="menu">
+                <li>1</li>
+                <li>2</li>
+                <li>3</li>
+            </ul>
+            <h3 class="category">Master Bed Window Direction</h2>
+            <button id="window-direction" class="select">--select one</button>
+            <ul class="menu">
+                <li>north</li>
+                <li>south</li>
+                <li>east</li>
+                <li>west</li>
+            </ul>
+            <!-- Insert more dropdowns here -->
+            <button class="primary-btns" id="save-btn">Save</button>
+        </div>
+
+    <h2>Loan Calculator</h2>
+    <input id="principal" type="number" min="0" placeholder="Enter loan amount">
+    <input id="years" type="number" min="0" placeholder="Enter length of loan (yrs)">
+    <input id="interest" type="number" min="0" placeholder="Enter APY">
+    <button id="calculate">Calculate</button>
+    <p id="output"></p>`;
+}
+function addConceptsContent() {
+    console.log(`${addConceptsContent.name}() triggered`)
+}
+function addNotesContent() {
+    console.log(`${addNotesContent.name}() triggered`)
+
+}
+
+navs.forEach(li => {
+    li.addEventListener('click', updatePageTitle)
+});
+
+
+///////////////
+//Preferences//
+///////////////
+
 //// Dark and Light Mode
 const darklLightToggle = document.querySelector("#d-l-toggle");
 const body = document.querySelector("body");
@@ -7,7 +111,7 @@ function restoreMode() {
     const savedState = localStorage.getItem("switchState");
     if (savedState === "on") {
       darklLightToggle.checked = true;
-      body.style.backgroundColor = "#855d00"
+      body.style.backgroundColor = "#19b0ae"
       headers2.forEach(h2 => {
         h2.style.color = "white"
       });
@@ -21,13 +125,13 @@ function restoreMode() {
 function saveMode() {
     if (this.checked) {
         localStorage.setItem("switchState", "on");
-        body.style.backgroundColor = "#855d00"
+        body.style.backgroundColor = "#19b0ae"
         headers2.forEach(h2 => {
             h2.style.color = "white"
           });
       } else {
         localStorage.setItem("switchState", "off");
-        body.style.backgroundColor = "#ffb300"
+        body.style.backgroundColor = "#8ae1e0"
         headers2.forEach(h2 => {
             h2.style.color = "black"
           });
@@ -37,198 +141,247 @@ function saveMode() {
 window.addEventListener("DOMContentLoaded", restoreMode);
 darklLightToggle.addEventListener("change", saveMode);
 
+///////////////
+////ToolsJS////
+///////////////
+
+
+
 //// Dropdown menu interaction
-const housesDisplay = document.querySelector(".display-houses")
-    // this element fomats saved houses 
-const addCancelBtn = document.querySelector("#add-house")
-    // this changes state to cancel button
-    // this reveals criteria dropdowns
-    // this creates save button 
-const dropdowns = document.querySelectorAll(".dropdown")
-    // This includes Type of Home
-    // etc...
-const selectBtns = document.querySelectorAll(".select")
-const activeCriteria = document.querySelectorAll(".active")
-    // this allows clicked elements to be stored in variable
-const criteriaLists = document.querySelectorAll(".menu")
-const liElements = document.querySelectorAll("li")
-const saveBtn = document.querySelector("#save-btn")
-    // this targets the save button at the bottom of the div
-const typeOfHomeBtn = document.querySelector("#type-of-home")
-const bedsBtn = document.querySelector("#beds")
-const bathsBtn = document.querySelector("#baths")
-const floorsBtn = document.querySelector("#floors")
-const windowDirectionBtn = document.querySelector("#window-direction")
 let activeHouse = false;
 let activeDropdown = false;
-
-function toggleActiveHouse() {
-    activeHouse = !activeHouse
-    if (!activeHouse) {
-        addCancelBtn.textContent = "Add Property"
-        saveBtn.classList.remove("visable-criteria");
-        dropdowns.forEach(dropdown => {
-            dropdown.classList.remove("visable-criteria");
+class AddPropertyUI {
+    constructor(contentDisplay) {
+        this.contentDisplay = contentDisplay;
+        this.housesDisplay = contentDisplay.querySelector(".display-houses")
+            // this element fomats saved houses 
+        this.addCancelBtn = contentDisplay.querySelector("#add-house")
+            // this changes state to cancel button
+            // this reveals criteria dropdowns
+            // this creates save button 
+        this.dropdowns = contentDisplay.querySelectorAll(".dropdown")
+            // This includes Type of Home
+            // etc...
+        this.selectBtns = contentDisplay.querySelectorAll(".select")
+        this.activeCriteria = contentDisplay.querySelectorAll(".active")
+            // this allows clicked elements to be stored in variable
+        this.criteriaLists = contentDisplay.querySelectorAll(".menu")
+        this.liElements = contentDisplay.querySelectorAll("li")
+        this.saveBtn = contentDisplay.querySelector("#save-btn")
+            // this targets the save button at the bottom of the div
+        this.typeOfHomeBtn = contentDisplay.querySelector("#type-of-home")
+        this.bedsBtn = contentDisplay.querySelector("#beds")
+        this.bathsBtn = contentDisplay.querySelector("#baths")
+        this.floorsBtn = contentDisplay.querySelector("#floors")
+        this.windowDirectionBtn = contentDisplay.querySelector("#window-direction")
+    } init() {
+        this.addCancelBtn.onclick = this.toggleActiveHouse.bind(this);
+        // addCancelBtn.addEventListener('click', toggleActiveHouse);
+        this.selectBtns.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                this.toggleDropdownMenu(e.target);
+                this.hideSelectBtn(e.target);
+            });
         });
-    }
-    if (activeHouse) {
-        addCancelBtn.textContent = "Cancel"
-        saveBtn.classList.add("visable-criteria");
-        selectBtns.forEach(btn => {
-            btn.textContent = '--select one';
+        this.liElements.forEach(criteria => {
+            criteria.onclick = (e) => this.updateCriteria(e.target);
         })
-        dropdowns.forEach(dropdown => {
-            dropdown.classList.add("visable-criteria");
-        });
-        saveBtn.onclick = saveHouse;    
-    }
-}
-
-function toggleDropdownMenu() {
-    activeDropdown = !activeDropdown
-    if (!activeDropdown) {
-        this.nextElementSibling.classList.remove("visable-dropdown");
-    }
-    if (activeDropdown) {
-        this.nextElementSibling.classList.add("visable-dropdown");
-    }
-}
-
-function updateCriteria() {
-    this.parentElement.previousElementSibling.textContent = this.textContent;
-    toggleDropdownMenu.call(this.parentElement.previousElementSibling);
-}
-
-function saveHouse() {
-    const typeOfHome = typeOfHomeBtn.textContent
-    const beds = bedsBtn.textContent
-    const baths = bathsBtn.textContent
-    const floors = floorsBtn.textContent
-    const windowDirection = windowDirectionBtn.textContent
-
-    if (typeOfHome === '--select one' || beds === '--select one' || baths === '--select one' || floors === '--select one' || windowDirection === '--select one') {
-        alert("You must complete all criteria.")
-        return;
-    }
+    } toggleActiveHouse() {
+        activeHouse = !activeHouse
+        if (!activeHouse) {
+            this.addCancelBtn.textContent = "Add Property"
+            this.saveBtn.classList.remove("visable-criteria");
+            this.dropdowns.forEach(dropdown => {
+                dropdown.classList.remove("visable-criteria");
+            });
+            }
+        if (activeHouse) {
+            this.addCancelBtn.textContent = "Cancel"
+            this.saveBtn.classList.add("visable-criteria");
+            this.selectBtns.forEach(btn => {
+                btn.textContent = '--select one';
+            })
+            this.dropdowns.forEach(dropdown => {
+                dropdown.classList.add("visable-criteria");
+            });
+            this.saveBtn.onclick = this.saveHouse.bind(this);    
+            }
+    } toggleDropdownMenu (btn) {
+        activeDropdown = !activeDropdown;
+        const menu = btn.nextElementSibling;
+        menu.classList.toggle("visable-dropdown", activeDropdown);
+        // if (!activeDropdown) {
+        //     this.nextElementSibling.classList.remove("visable-dropdown");
+        // }
+        // if (activeDropdown) {
+        //     this.nextElementSibling.classList.add("visable-dropdown");
+        // }
+    } updateCriteria(item) {
+        const button = item.parentElement.previousElementSibling;
+        button.textContent = item.textContent;
+        this.toggleDropdownMenu(button);
+    } saveHouse() {
+        const typeOfHome = this.typeOfHomeBtn.textContent
+        const beds = this.bedsBtn.textContent
+        const baths = this.bathsBtn.textContent
+        const floors = this.floorsBtn.textContent
+        const windowDirection = this.windowDirectionBtn.textContent
     
-    toggleActiveHouse();
+        if (typeOfHome === '--select one' || beds === '--select one' || baths === '--select one' || floors === '--select one' || windowDirection === '--select one') {
+            alert("You must complete all criteria.")
+            return;
+        }
+        
+        this.toggleActiveHouse();
+    
+        const houseInfo = document.createElement("p");
+        houseInfo.textContent = `${typeOfHome} with ${beds} bed, ${baths} bath, and ${floors} floor. Master windows on the ${windowDirection} wall.`;
+    
+        const deleteBtn = document.createElement("button");
+        deleteBtn.textContent = "x";
+        deleteBtn.classList.add("delete");
+    
+        this.housesDisplay.style.backgroundColor = "white";
+        this.housesDisplay.style.padding = "5px 5px";
+        this.housesDisplay.style.marginBottom = "30px";
+        this.housesDisplay.style.fontWeight = "bold";
+    
+        deleteBtn.addEventListener("click", () => {
+            houseInfo.remove();
+        });
+     
+        houseInfo.appendChild(deleteBtn);
+        this.housesDisplay.appendChild(houseInfo);
+    } hideSelectBtn(btn) {
+        btn.classList.add("hidden");
+    }
 
-    const houseInfo = document.createElement("p");
-    houseInfo.textContent = `${typeOfHome} with ${beds} bed, ${baths} bath, and ${floors} floor. Master windows on the ${windowDirection} wall.`;
+// function toggleActiveHouse() {
+//     activeHouse = !activeHouse
+//     if (!activeHouse) {
+//         addCancelBtn.textContent = "Add Property"
+//         saveBtn.classList.remove("visable-criteria");
+//         dropdowns.forEach(dropdown => {
+//             dropdown.classList.remove("visable-criteria");
+//         });
+//     }
+//     if (activeHouse) {
+//         addCancelBtn.textContent = "Cancel"
+//         saveBtn.classList.add("visable-criteria");
+//         selectBtns.forEach(btn => {
+//             btn.textContent = '--select one';
+//         })
+//         dropdowns.forEach(dropdown => {
+//             dropdown.classList.add("visable-criteria");
+//         });
+//         saveBtn.onclick = saveHouse;    
+//     }
+// }
 
-    const deleteBtn = document.createElement("button");
-    deleteBtn.textContent = "x";
-    deleteBtn.classList.add("delete");
+// function toggleDropdownMenu() {
+//     activeDropdown = !activeDropdown
+//     if (!activeDropdown) {
+//         this.nextElementSibling.classList.remove("visable-dropdown");
+//     }
+//     if (activeDropdown) {
+//         this.nextElementSibling.classList.add("visable-dropdown");
+//     }
+// }
 
-    housesDisplay.style.backgroundColor = "white";
-    housesDisplay.style.padding = "5px 5px";
-    housesDisplay.style.marginBottom = "30px";
-    housesDisplay.style.fontWeight = "bold";
+// function updateCriteria() {
+//     this.parentElement.previousElementSibling.textContent = this.textContent;
+//     toggleDropdownMenu.call(this.parentElement.previousElementSibling);
+// }
 
-    deleteBtn.addEventListener("click", () => {
-        houseInfo.remove();
-    });
+// function saveHouse() {
+//     const typeOfHome = typeOfHomeBtn.textContent
+//     const beds = bedsBtn.textContent
+//     const baths = bathsBtn.textContent
+//     const floors = floorsBtn.textContent
+//     const windowDirection = windowDirectionBtn.textContent
+
+//     if (typeOfHome === '--select one' || beds === '--select one' || baths === '--select one' || floors === '--select one' || windowDirection === '--select one') {
+//         alert("You must complete all criteria.")
+//         return;
+//     }
+    
+//     toggleActiveHouse();
+
+//     const houseInfo = document.createElement("p");
+//     houseInfo.textContent = `${typeOfHome} with ${beds} bed, ${baths} bath, and ${floors} floor. Master windows on the ${windowDirection} wall.`;
+
+//     const deleteBtn = document.createElement("button");
+//     deleteBtn.textContent = "x";
+//     deleteBtn.classList.add("delete");
+
+//     housesDisplay.style.backgroundColor = "white";
+//     housesDisplay.style.padding = "5px 5px";
+//     housesDisplay.style.marginBottom = "30px";
+//     housesDisplay.style.fontWeight = "bold";
+
+//     deleteBtn.addEventListener("click", () => {
+//         houseInfo.remove();
+//     });
  
-    houseInfo.appendChild(deleteBtn);
-    housesDisplay.appendChild(houseInfo);
+//     houseInfo.appendChild(deleteBtn);
+//     housesDisplay.appendChild(houseInfo);
+// }
+
+//  hideSelectBtn() {
+//     this.classList.add("hidden");
+// }
+
+//  deleteFunction() {
+//     this.closest("p").remove();
+// }
+
+// function addToolEventListeners() {
+//     addCancelBtn.onclick = toggleActiveHouse;
+//     // addCancelBtn.addEventListener('click', toggleActiveHouse);
+//     selectBtns.forEach(btn => {
+//         btn.addEventListener('click', 
+//         toggleDropdownMenu,
+//         hideSelectBtn)
+//     });
+//     liElements.forEach(criteria => {
+//         criteria.onclick = updateCriteria;
+//     })
+//     calcBtn.addEventListener('click', calculate);
 }
 
-function hideSelectBtn() {
-    this.classList.add("hidden");
-}
+///////////////
+///Loan Calc///
+///////////////
 
-function deleteFunction() {
-    this.closest("p").remove();
-}
 
-addCancelBtn.onclick = toggleActiveHouse;
-    // addCancelBtn.addEventListener('click', toggleActiveHouse);
-selectBtns.forEach(btn => {
-    btn.addEventListener('click', 
-        toggleDropdownMenu,
-        hideSelectBtn)
-});
-liElements.forEach(criteria => {
-    criteria.onclick = updateCriteria;
-})
-
-const principalElement = document.querySelector("#principal");
-const yearsElement = document.querySelector("#years");
-const interestElement = document.querySelector("#interest");
-const calcBtn = document.querySelector("#calculate");
-const displayPayment = document.querySelector("#output");
-
-class Loan {
-    constructor(principal, years, interest) {
-        this.principal = principal;
-        this.years = years;
-        this.interest = interest;
-    }
-    requestConfirm() {
-    }
-    monthlyPayment() {
-        const r = this.interest / 100 / 12;
-        const b = this.years * 12;
-        const numerator = this.principal * r * (1+r) ** b;
+class LoanCalcUI {
+    constructor(contentDisplay) {
+        this.contentDisplay = contentDisplay
+        this.principalElement = contentDisplay.querySelector("#principal");
+        this.yearsElement = contentDisplay.querySelector("#years");
+        this.interestElement = contentDisplay.querySelector("#interest");
+        this.calcBtn = contentDisplay.querySelector("#calculate");
+        this.displayPayment = contentDisplay.querySelector("#output");
+    } init() {
+        this.calcBtn.addEventListener('click', this.calculateMonthly.bind(this));
+    } calculateMonthly() {
+        let principal = parseFloat(this.principalElement.value);
+        let years = parseFloat(this.yearsElement.value);
+        let interest = parseFloat(this.interestElement.value);
+        // Clear users input values
+        this.principalElement.value = '';
+        this.yearsElement.value = '';
+        this.interestElement.value = '';
+        // Math operations
+        const r = interest / 100 / 12;
+        const b = years * 12;
+        const numerator = principal * r * (1+r) ** b;
         const denominator = (1+r) ** b - 1;
         let paymentPerMonth = numerator / denominator;
         if (r === 0) {
             paymentPerMonth = this.principal / b;
         }
-        console.log(`You have quoted a loan of $${this.principal} over ${this.years} years at a ${this.interest}% APY.`);
-        return Number(paymentPerMonth).toFixed(2);
+        console.log(`You have quoted a loan of $${principal} over ${years} years at a ${interest}% APY.`);
+        this.displayPayment.textContent = `Your payment is $${paymentPerMonth.toFixed(2)}/month. \n ($${principal} over ${years} years at an ${interest}% APY.)`;
     }
 }
-
-function calculate() {
-    let principal = parseFloat(principalElement.value);
-    let years = parseFloat(yearsElement.value);
-    let interest = parseFloat(interestElement.value);
-
-    principalElement.value = '';
-    yearsElement.value = '';
-    interestElement.value = '';
-
-    const loan = new Loan(principal, years, interest);
-    displayPayment.textContent = `Your payment is $${loan.monthlyPayment()}/month. \n ($${principal} over ${years} years at an ${interest}% APY.)`;
-}
-
-calcBtn.addEventListener('click', calculate);
-
-////Contact saved animation --- needs array integration
-// confirmation = 'Your contact was saved.'
-
-// const fullName = document.querySelector('#name');
-// const phoneNumber = document.querySelector('#phone');
-// const company = document.querySelector('#company');
-
-// const contactSaved = function() {
-//     const names = fullName.value.trim();
-//     const numbers = phoneNumber.value.trim();
-//     const companies = company.value.trim();
-
-//     alert(`You added:\n ${names} \n ${numbers} \n ${companies}. \n Plan a meeting.`);
-// };
-
-// document.querySelector('.addbtn').addEventListener('click', contactSaved);
-
-//Save email into array
-
-//// Independent variables using same function
-// function createBetterCouter() {
-//     let count = 9;
-
-//     return function () {
-//         count--;
-//         console.log(`Current Count: ${count}`);
-//     };
-// }
-
-// const count9 = createBetterCouter();
-// const count8 = createBetterCouter();
-
-// count9();
-// count9();
-
-// count8();
-// count8();
