@@ -1,7 +1,3 @@
-
-
-
-
 ///////////////
 //////SPA//////
 ///////////////
@@ -26,10 +22,11 @@ function updatePageTitle() {
         addConceptsContent();
     } if (this.textContent === "Notes") {
         addNotesContent();
+        const note = new NotesUI(contentDisplay);
+        note.init();
     }
 }
 function addToolsContent() {
-    console.log(`${addToolsContent.name}() triggered`)
     contentDisplay.innerHTML = `<h2>Property Crtieria</h2>
         <div class="display-houses"></div>
         <button class="primary-btns" id="add-house">Add Property</button>
@@ -86,17 +83,28 @@ function addToolsContent() {
     <p id="output"></p>`;
 }
 function addConceptsContent() {
-    console.log(`${addConceptsContent.name}() triggered`)
+    contentDisplay.innerHTML = `    <h4>Down payment</h4>
+    <p>the money you provide upfront to the financer</p>
+    <h4>APY</h4>
+    <p>the interest that you pay on the amount of debt you hold, typically compounded every month</p>
+    <h4>Collateral</h4>
+    <p>assets, typically with low liquidity, that you pledge to the lender subject to seizure on default </p>`
 }
 function addNotesContent() {
-    console.log(`${addNotesContent.name}() triggered`)
-
+    contentDisplay.innerHTML = `    <div id="noteContainer">
+    <p>Your Notes</p>
+    <ul id="savedNotes"> 
+    </ul>
+    <input id="noteTitle" type="text" placeholder="Note Title">
+    <button class="notesBtn" id="saveButton">Save Note</button>
+    <button class="notesBtn" id="clearButton">Clear Note</button>
+    <textarea id="note" placeholder="Note Content"></textarea>
+    </div>`
 }
 
 navs.forEach(li => {
     li.addEventListener('click', updatePageTitle)
 });
-
 
 ///////////////
 //Preferences//
@@ -141,11 +149,96 @@ function saveMode() {
 window.addEventListener("DOMContentLoaded", restoreMode);
 darklLightToggle.addEventListener("change", saveMode);
 
-///////////////
-////ToolsJS////
-///////////////
+////////////////
+/////Notes//////
+////////////////
 
+class NotesUI {
+    constructor(container) {
+        this.container = container;
+        this.savedNotesList = container.querySelector("#savedNotes");
+        this.titleInput = container.querySelector("#noteTitle");
+        this.noteTextarea = container.querySelector("#note");
+        this.saveButton = container.querySelector("#saveButton");
+        this.clearButton = container.querySelector("#clearButton")
+    } init() {
+        // restore session data
+        this.restoreSession();
+        // load saved notes
+        this.loadSavedNotes();
+        // Save current form inputs to sessionStorage
+        this.titleInput.addEventListener("input", () => {
+            sessionStorage.setItem("noteTitle", this.titleInput.value);
+        });
+        
+        this.noteTextarea.addEventListener("input", () => {
+            sessionStorage.setItem("noteContent", this.noteTextarea.value);
+        });
+        // save note permanently
+        this.saveButton.addEventListener("click", () => this.saveNote());
+        this.clearButton.addEventListener("click", () => this.clearNoteContent())
+    } restoreSession() {
+        const savedTitle = sessionStorage.getItem("noteTitle");
+        const savedContent = sessionStorage.getItem("noteContent");
 
+        if (savedTitle) this.titleInput.value = savedTitle;
+        if (savedContent) this.noteTextarea.value = savedContent;
+    } loadSavedNotes() {
+        const notes = JSON.parse(localStorage.getItem("savedNotes")) || [];
+
+        notes.forEach(note => {
+            this.createNoteListItem(note.title, note.content);
+        });
+    } clearNoteContent() {
+        if (confirm("Are you sure you want to clear note?")) {
+            this.titleInput.value = '';
+            this.noteTextarea.value = '';
+        } else {
+            return;
+        }
+        
+    } saveNote() {
+        const title = this.titleInput.value.trim();
+        const content = this.noteTextarea.value.trim();
+
+        if (!title || !content) {
+            alert("Title and content are required.")
+            return;
+        }
+
+        const notes = JSON.parse(localStorage.getItem("savedNotes")) || [];
+
+        if (notes.some(note => note.title === title)) {
+            alert("Make your note title unique.");
+            return;
+        }
+
+        notes.push({ title, content }); 
+        localStorage.setItem("savedNotes", JSON.stringify(notes));
+
+        this.createNoteListItem(title, content);
+        this.titleInput.value = "";
+        this.noteTextarea.value = "";
+        sessionStorage.clear();
+    } createNoteListItem(title, content) {
+        const li = document.createElement("li");
+        li.textContent = title;
+        li.classList.add("note-item");
+
+        li.addEventListener("click", () => {
+            this.titleInput.value = title;
+            this.noteTextarea.value = content;
+            sessionStorage.setItem("noteTitle", title);
+            sessionStorage.setItem("noteContent", content);
+        });
+
+        this.savedNotesList.appendChild(li);
+    }
+}
+
+////////////////
+//add Property//
+////////////////
 
 //// Dropdown menu interaction
 let activeHouse = false;
@@ -176,7 +269,6 @@ class AddPropertyUI {
         this.windowDirectionBtn = contentDisplay.querySelector("#window-direction")
     } init() {
         this.addCancelBtn.onclick = this.toggleActiveHouse.bind(this);
-        // addCancelBtn.addEventListener('click', toggleActiveHouse);
         this.selectBtns.forEach(btn => {
             btn.addEventListener('click', (e) => {
                 this.toggleDropdownMenu(e.target);
@@ -210,12 +302,6 @@ class AddPropertyUI {
         activeDropdown = !activeDropdown;
         const menu = btn.nextElementSibling;
         menu.classList.toggle("visable-dropdown", activeDropdown);
-        // if (!activeDropdown) {
-        //     this.nextElementSibling.classList.remove("visable-dropdown");
-        // }
-        // if (activeDropdown) {
-        //     this.nextElementSibling.classList.add("visable-dropdown");
-        // }
     } updateCriteria(item) {
         const button = item.parentElement.previousElementSibling;
         button.textContent = item.textContent;
@@ -255,98 +341,6 @@ class AddPropertyUI {
     } hideSelectBtn(btn) {
         btn.classList.add("hidden");
     }
-
-// function toggleActiveHouse() {
-//     activeHouse = !activeHouse
-//     if (!activeHouse) {
-//         addCancelBtn.textContent = "Add Property"
-//         saveBtn.classList.remove("visable-criteria");
-//         dropdowns.forEach(dropdown => {
-//             dropdown.classList.remove("visable-criteria");
-//         });
-//     }
-//     if (activeHouse) {
-//         addCancelBtn.textContent = "Cancel"
-//         saveBtn.classList.add("visable-criteria");
-//         selectBtns.forEach(btn => {
-//             btn.textContent = '--select one';
-//         })
-//         dropdowns.forEach(dropdown => {
-//             dropdown.classList.add("visable-criteria");
-//         });
-//         saveBtn.onclick = saveHouse;    
-//     }
-// }
-
-// function toggleDropdownMenu() {
-//     activeDropdown = !activeDropdown
-//     if (!activeDropdown) {
-//         this.nextElementSibling.classList.remove("visable-dropdown");
-//     }
-//     if (activeDropdown) {
-//         this.nextElementSibling.classList.add("visable-dropdown");
-//     }
-// }
-
-// function updateCriteria() {
-//     this.parentElement.previousElementSibling.textContent = this.textContent;
-//     toggleDropdownMenu.call(this.parentElement.previousElementSibling);
-// }
-
-// function saveHouse() {
-//     const typeOfHome = typeOfHomeBtn.textContent
-//     const beds = bedsBtn.textContent
-//     const baths = bathsBtn.textContent
-//     const floors = floorsBtn.textContent
-//     const windowDirection = windowDirectionBtn.textContent
-
-//     if (typeOfHome === '--select one' || beds === '--select one' || baths === '--select one' || floors === '--select one' || windowDirection === '--select one') {
-//         alert("You must complete all criteria.")
-//         return;
-//     }
-    
-//     toggleActiveHouse();
-
-//     const houseInfo = document.createElement("p");
-//     houseInfo.textContent = `${typeOfHome} with ${beds} bed, ${baths} bath, and ${floors} floor. Master windows on the ${windowDirection} wall.`;
-
-//     const deleteBtn = document.createElement("button");
-//     deleteBtn.textContent = "x";
-//     deleteBtn.classList.add("delete");
-
-//     housesDisplay.style.backgroundColor = "white";
-//     housesDisplay.style.padding = "5px 5px";
-//     housesDisplay.style.marginBottom = "30px";
-//     housesDisplay.style.fontWeight = "bold";
-
-//     deleteBtn.addEventListener("click", () => {
-//         houseInfo.remove();
-//     });
- 
-//     houseInfo.appendChild(deleteBtn);
-//     housesDisplay.appendChild(houseInfo);
-// }
-
-//  hideSelectBtn() {
-//     this.classList.add("hidden");
-// }
-
-//  deleteFunction() {
-//     this.closest("p").remove();
-// }
-
-// function addToolEventListeners() {
-//     addCancelBtn.onclick = toggleActiveHouse;
-//     // addCancelBtn.addEventListener('click', toggleActiveHouse);
-//     selectBtns.forEach(btn => {
-//         btn.addEventListener('click', 
-//         toggleDropdownMenu,
-//         hideSelectBtn)
-//     });
-//     liElements.forEach(criteria => {
-//         criteria.onclick = updateCriteria;
-//     })
-//     calcBtn.addEventListener('click', calculate);
 }
 
 ///////////////

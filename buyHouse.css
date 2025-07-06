@@ -9,7 +9,7 @@ h1 {
 }
 
 #mainNav {
-    position: fixed;
+    position: absolute;
     top: 120px;              /* Push it down slightly from the top */
     left: 50%;               /* Center horizontally */
     transform: translateX(-50%); /* Pull it back by half its width to truly center it */
@@ -26,7 +26,6 @@ h1 {
 }
 
 #preferences {
-    position: fixed;
     top:  5px;
     left: 5px;
     max-height: fit-content;
@@ -38,6 +37,21 @@ h1 {
     max-width: fit-content;
     padding: 10px 10px;
     background-color: white;
+}
+
+#note {
+    width: 800px;
+    height: 600px;
+}
+#noteContainer {
+    display: grid;
+    grid-template-columns: auto;
+    max-width: fit-content;
+    margin-left: 37vb;
+}
+.notesBtn {
+    max-width: fit-content;
+    margin-left: 45vb;
 }
 
 #orange {
